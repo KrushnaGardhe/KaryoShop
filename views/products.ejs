@@ -1,0 +1,159 @@
+<% layout('layout') %>
+
+<!-- Products Header -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-6 fw-bold mb-0">Premium Products for Your Precious Family</h1>
+                <p class="text-muted">Safe, tested, and loved by 75,000+ families</p>
+            </div>
+            <div class="col-md-6">
+                <!-- Search and Filter Form -->
+                <form method="GET" class="d-flex gap-2 flex-wrap justify-content-md-end">
+                    <input type="text" name="search" class="form-control" placeholder="Search for your family..." 
+                           value="<%= search %>" style="max-width: 200px;">
+                    <select name="category" class="form-select" style="max-width: 150px;">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat %>" <%= category === cat ? 'selected' : '' %>><%= cat %></option>
+                        <% }) %>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <% if (search || category) { %>
+                        <a href="/products" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-5">
+    <div class="container">
+        <% if (products && products.length > 0) { %>
+            <div class="row">
+                <% products.forEach(product => { %>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card product-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="<%= product.images[0] %>" class="card-img-top product-image" alt="<%= product.name %>">
+                                <% if (product.stock <= 5 && product.stock > 0) { %>
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2 pulse-animation">ONLY <%= product.stock %> LEFT!</span>
+                                <% } else if (product.stock === 0) { %>
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>
+                                <% } %>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title"><%= product.name %></h5>
+                                <p class="card-text text-muted"><%= product.description.substring(0, 100) %>...</p>
+                                <div class="product-details mb-3">
+                                    <small class="text-muted d-block">
+                                        <i class="fas fa-tag me-1"></i>Category: <%= product.category %>
+                                    </small>
+                                    <% if (product.sizes && product.sizes.length > 0) { %>
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-ruler me-1"></i>Sizes: <%= product.sizes.join(', ') %>
+                                        </small>
+                                    <% } %>
+                                    <% if (product.colors && product.colors.length > 0) { %>
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-palette me-1"></i>Colors: <%= product.colors.join(', ') %>
+                                        </small>
+                                    <% } %>
+                                </div>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <h4 class="text-primary mb-0 fw-bold">₹<%= product.price %></h4>
+                                            <small class="text-success">
+                                                <i class="fas fa-truck me-1"></i>Free Delivery
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="stars mb-1">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                            </div>
+                                            <small class="text-muted">4.9 (2.1k)</small>
+                                        </div>
+                                    </div>
+                                    <div class="product-actions">
+                                        <a href="/products/<%= product._id %>/buy-now" class="btn btn-warning w-100 mb-2 fw-bold">
+                                            <i class="fas fa-bolt me-2"></i>BUY NOW - COD
+                                        </a>
+                                        <a href="/products/<%= product._id %>" class="btn btn-outline-primary w-100">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+                <nav aria-label="Products pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="/products?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= category ? '&category=' + category : '' %>">Previous</a>
+                        </li>
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="/products?page=<%= i %><%= search ? '&search=' + search : '' %><%= category ? '&category=' + category : '' %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                        <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="/products?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %><%= category ? '&category=' + category : '' %>">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            <% } %>
+        <% } else { %>
+            <div class="text-center py-5">
+                <i class="fas fa-search fs-1 text-muted mb-3"></i>
+                <h3>No Products Found for Your Search</h3>
+                <p class="text-muted">Try adjusting your search or filter criteria.</p>
+                <a href="/products" class="btn btn-primary">View All Family Products</a>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Trust Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-shield-alt text-success fs-1 mb-2"></i>
+                <h6 class="fw-bold">100% Safe Products</h6>
+                <small class="text-muted">Tested for your family</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-money-bill text-primary fs-1 mb-2"></i>
+                <h6 class="fw-bold">Zero Risk Shopping</h6>
+                <small class="text-muted">Pay only when happy</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-heart text-danger fs-1 mb-2"></i>
+                <h6 class="fw-bold">Love Guarantee</h6>
+                <small class="text-muted">30-day happiness promise</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-phone-alt text-info fs-1 mb-2"></i>
+                <h6 class="fw-bold">Personal Care</h6>
+                <small class="text-muted">We call before delivery</small>
+            </div>
+        </div>
+    </div>
+</section>

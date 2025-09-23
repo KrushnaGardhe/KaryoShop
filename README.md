@@ -1,4 +1,4 @@
-# Jethalal Clothing - Complete E-commerce Website
+# Karyo- Complete E-commerce Website
 
 A complete clothing shopping website built with Node.js, Express.js, MongoDB, and EJS templates. Features Cash on Delivery (COD) payment system with trust-building design focused on family values.
 
@@ -32,7 +32,7 @@ A complete clothing shopping website built with Node.js, Express.js, MongoDB, an
 ## 📁 Project Structure
 
 ```
-jethalal-clothing-website/
+Karyo/
 ├── models/
 │   ├── Product.js          # Product data model
 │   └── Order.js           # Order data model
@@ -67,7 +67,7 @@ jethalal-clothing-website/
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd jethalal-clothing-website
+   cd Karyo
    ```
 
 2. **Install dependencies**
@@ -79,7 +79,7 @@ jethalal-clothing-website/
    Create a `.env` file in the root directory:
    ```env
    PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/jethalal_clothing
+   MONGODB_URI=mongodb://localhost:27017/Karyo
    ```
 
 4. **Start MongoDB**
@@ -239,16 +239,7 @@ Each product includes:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📞 Support
 
-For support and questions:
-- **Email**: contact@jethalal.com
-- **Phone**: +91-9876543210
-- **Address**: Gokuldham Society, Powder Gali, Mumbai - 400001
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 

@@ -1,0 +1,197 @@
+<% layout('layout') %>
+
+<!-- Success Hero Section -->
+<section class="py-5 bg-success text-white">
+    <div class="container">
+        <div class="text-center">
+            <i class="fas fa-heart fs-1 mb-3"></i>
+            <h1 class="display-4 fw-bold mb-3">Your Family Will Be So Happy!</h1>
+            <p class="lead">Thank you for trusting PAWS with your most precious family members. Your love is on the way!</p>
+        </div>
+    </div>
+</section>
+
+<!-- Order Details -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-heart me-2"></i>Family Love Confirmation
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Order Information -->
+                        <div class="order-info mb-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-primary">Order ID:</h6>
+                                    <p class="fs-4 fw-bold text-success"><%= order.orderId %></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-primary">Order Date:</h6>
+                                    <p><%= new Date(order.createdAt).toLocaleDateString('en-IN', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    }) %></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-primary">Total Amount:</h6>
+                                    <p class="fs-4 fw-bold">₹<%= order.totalAmount.toFixed(2) %></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-primary">Payment Method:</h6>
+                                    <p><span class="badge bg-success fs-6">Cash on Delivery</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Details -->
+                        <div class="customer-details mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-home me-2"></i>Family Information
+                            </h5>
+                            <div class="bg-light p-3 rounded">
+                                <p class="mb-1"><strong>Name:</strong> <%= order.customer.name %></p>
+                                <p class="mb-1"><strong>Mobile:</strong> <%= order.customer.mobile %></p>
+                                <p class="mb-1"><strong>Email:</strong> <%= order.customer.email %></p>
+                                <p class="mb-0"><strong>Address:</strong> <%= order.customer.address %></p>
+                            </div>
+                        </div>
+
+                        <!-- Ordered Items -->
+                        <div class="ordered-items mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-heart me-2"></i>Love Coming to Your Family
+                            </h5>
+                            <% order.products.forEach(item => { %>
+                                <div class="item-card border rounded p-3 mb-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="<%= item.image %>" class="img-fluid rounded" alt="<%= item.name %>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="fw-bold"><%= item.name %></h6>
+                                            <div class="item-details">
+                                                <% if (item.size) { %>
+                                                    <small class="text-muted d-block">Size: <%= item.size %></small>
+                                                <% } %>
+                                                <% if (item.color) { %>
+                                                    <small class="text-muted d-block">Color: <%= item.color %></small>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p class="mb-0">Qty: <strong><%= item.quantity %></strong></p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p class="mb-0 fw-bold text-primary">₹<%= (item.price * item.quantity).toFixed(2) %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <!-- Next Steps -->
+                        <div class="next-steps">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-heart me-2"></i>How We'll Bring Happiness to Your Family
+                            </h5>
+                            <div class="steps">
+                                <div class="step-item d-flex align-items-start mb-3">
+                                    <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold">Family Care Call</h6>
+                                        <p class="text-muted mb-0">Our family care expert will call within 24 hours to confirm your precious order and ensure everything is perfect.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item d-flex align-items-start mb-3">
+                                    <div class="step-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold">Love Preparation</h6>
+                                        <p class="text-muted mb-0">Your family's products will be lovingly prepared and safely packed within 2-3 business days.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item d-flex align-items-start mb-3">
+                                    <div class="step-icon bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold">Happiness Delivery</h6>
+                                        <p class="text-muted mb-0">Your family's happiness will arrive within 3-5 business days. Our care expert will call before arriving at your home.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item d-flex align-items-start">
+                                    <div class="step-icon bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold">Pay When Happy</h6>
+                                        <p class="text-muted mb-0">See your family's joy, then pay in cash. No advance payment, no risk - just pure happiness!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="text-center mt-4">
+                    <h5 class="fw-bold mb-3">Need Family Care Support?</h5>
+                    <div class="contact-buttons">
+                        <a href="tel:+91-9876543210" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-heart me-2"></i>Call Family Care: +91-9876543210
+                        </a>
+                        <a href="mailto:care@pawsstore.com" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-envelope me-2"></i>Email Care Team
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <a href="/products" class="btn btn-success btn-lg me-3">
+                        <i class="fas fa-heart me-2"></i>Add More Love for Family
+                    </a>
+                    <button onclick="window.print()" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-print me-2"></i>Print Family Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Important Notes -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="note-card h-100 p-4 bg-white rounded shadow-sm">
+                    <div class="text-center">
+                        <i class="fas fa-heart text-success fs-2 mb-3"></i>
+                        <h5 class="fw-bold">100% Family Safe</h5>
+                        <p class="text-muted">Your family's happiness is completely safe with us. We are a family business that puts your loved ones first.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="note-card h-100 p-4 bg-white rounded shadow-sm">
+                    <div class="text-center">
+                        <i class="fas fa-smile text-warning fs-2 mb-3"></i>
+                        <h5 class="fw-bold">Love Guarantee</h5>
+                        <p class="text-muted">Not seeing smiles? We offer hassle-free returns within 30 days. Your family's happiness is guaranteed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

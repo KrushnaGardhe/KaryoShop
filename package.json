@@ -1,0 +1,35 @@
+{
+  "name": "paws-pet-baby-store",
+  "version": "1.0.0",
+  "description": "Complete pet and baby products store with COD support - Where Love Meets Care",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node seed.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.9",
+    "ejs-mate": "^4.0.0",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^8.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "ecommerce",
+    "pets",
+    "baby",
+    "nodejs",
+    "express",
+    "mongodb",
+    "ejs"
+  ],
+  "author": "PAWS Pet & Baby Store",
+  "license": "MIT"
+}
