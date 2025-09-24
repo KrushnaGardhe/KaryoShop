@@ -614,3 +614,6 @@ footer {
 ::-webkit-scrollbar-thumb:hover {
   background: #0056b3;
 }
+.z-index-3 {
+    z-index: 1030; /* Example, similar to navbar */
+}
