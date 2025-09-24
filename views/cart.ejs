@@ -1,186 +1,207 @@
 <% layout('layout') %>
 
-    <section class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h1 class="display-6 fw-bold mb-4">
-                        <i class="fas fa-heart me-2"></i>Products for Your Precious Family
-                    </h1>
+<section class="py-4">
+    <div class="container">
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-12 col-lg-8 mb-4">
+                <h1 class="display-6 fw-bold mb-4 text-center text-lg-start">
+                    <i class="fas fa-heart me-2"></i>Products for Your Precious Family
+                </h1>
 
-                    <% if (cart && cart.length> 0) { %>
-                        <div class="cart-items">
-                            <% cart.forEach((item, index)=> { %>
-                                <div class="card mb-3 shadow-sm">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-2">
-                                                <img src="<%= item.image %>" class="img-fluid rounded"
-                                                    alt="<%= item.name %>">
+                <% if (cart && cart.length > 0) { %>
+                    <div class="cart-items">
+                        <% cart.forEach((item, index) => { %>
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center g-2">
+                                        <div class="col-4 col-md-2">
+                                            <img src="<%= item.image %>" class="img-fluid rounded"
+                                                alt="<%= item.name %>">
+                                        </div>
+                                        <div class="col-8 col-md-4">
+                                            <h5 class="card-title mb-1"><%= item.name %></h5>
+                                            <div class="item-details">
+                                                <% if (item.size) { %>
+                                                    <small class="text-muted d-block">Size: <%= item.size %></small>
+                                                <% } %>
+                                                <% if (item.color) { %>
+                                                    <small class="text-muted d-block">Color: <%= item.color %></small>
+                                                <% } %>
+                                                <small class="text-muted d-block">Price: ₹<%= item.price %> each</small>
                                             </div>
-                                            <div class="col-md-4">
-                                                <h5 class="card-title mb-1">
-                                                    <%= item.name %>
-                                                </h5>
-                                                <div class="item-details">
-                                                    <% if (item.size) { %>
-                                                        <small class="text-muted d-block">Size: <%= item.size %></small>
-                                                        <% } %>
-                                                            <% if (item.color) { %>
-                                                                <small class="text-muted d-block">Color: <%= item.color
-                                                                        %></small>
-                                                                <% } %>
-                                                                    <small class="text-muted d-block">Price: ₹<%=
-                                                                            item.price %> each</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <form method="POST" action="/cart/update" class="d-inline">
-                                                    <input type="hidden" name="index" value="<%= index %>">
-                                                    <div class="quantity-controls d-flex align-items-center">
-                                                        <label for="quantity_<%= index %>"
-                                                            class="form-label me-2 mb-0">Qty:</label>
-                                                        <input type="number" name="quantity" id="quantity_<%= index %>"
-                                                            class="form-control me-2" value="<%= item.quantity %>"
-                                                            min="1" max="10" style="width: 70px;">
-                                                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-sync"></i>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <h5 class="text-primary mb-0">₹<%= (item.price *
-                                                        item.quantity).toFixed(2) %>
-                                                </h5>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <form method="POST" action="/cart/remove" class="d-inline">
-                                                    <input type="hidden" name="index" value="<%= index %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="fas fa-trash"></i>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <form method="POST" action="/cart/update" class="d-inline">
+                                                <input type="hidden" name="index" value="<%= index %>">
+                                                <div class="quantity-controls d-flex align-items-center">
+                                                    <label for="quantity_<%= index %>" class="form-label me-2 mb-0">Qty:</label>
+                                                    <input type="number" name="quantity" id="quantity_<%= index %>"
+                                                        class="form-control me-2" value="<%= item.quantity %>"
+                                                        min="1" max="10" style="width: 70px;">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-sync"></i>
                                                     </button>
-                                                </form>
-                                            </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-3 col-md-2">
+                                            <h5 class="text-primary mb-0">₹<%= (item.price * item.quantity).toFixed(2) %></h5>
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <form method="POST" action="/cart/remove" class="d-inline">
+                                                <input type="hidden" name="index" value="<%= index %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
-                                <% }) %>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-cart text-center py-5">
+                        <i class="fas fa-shopping-cart fs-1 text-muted mb-3"></i>
+                        <h3>Your family cart is waiting</h3>
+                        <p class="text-muted">Add some love for your babies and pets to continue.</p>
+                        <a href="/products" class="btn btn-primary btn-lg">
+                            <i class="fas fa-heart me-2"></i>Shop for My Family
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Cart Summary -->
+            <% if (cart && cart.length > 0) { %>
+                <div class="col-12 col-lg-4 mb-4">
+                    <div class="card shadow-sm sticky-top" style="top: 90px;">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Family Love Summary</h5>
                         </div>
-                        <% } else { %>
-                            <div class="empty-cart text-center py-5">
-                                <i class="fas fa-shopping-cart fs-1 text-muted mb-3"></i>
-                                <h3>Your family cart is waiting</h3>
-                                <p class="text-muted">Add some love for your babies and pets to continue.</p>
-                                <a href="/products" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-heart me-2"></i>Shop for My Family
+                        <div class="card-body">
+                            <div class="order-summary">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Items (<%= cart.length %>):</span>
+                                    <span>₹<%= subtotal.toFixed(2) %></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span class="text-success">FREE</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Total:</strong>
+                                    <strong class="text-primary fs-4">₹<%= subtotal.toFixed(2) %></strong>
+                                </div>
+
+                                <div class="payment-info bg-light p-3 rounded mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-money-bill-wave text-success fs-4 me-2"></i>
+                                        <strong>Pay Only When Your Family is Happy</strong>
+                                    </div>
+                                    <small class="text-muted">
+                                        No advance payment required. Pay when you see your family's happiness.
+                                    </small>
+                                </div>
+
+                                <a href="/checkout" class="btn btn-success btn-lg w-100 mb-3">
+                                    <i class="fas fa-heart me-2"></i>Get These for My Family
+                                </a>
+
+                                <a href="/products" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-arrow-left me-2"></i>Add More Love
                                 </a>
                             </div>
-                            <% } %>
-                </div>
-
-                <!-- Cart Summary -->
-                <% if (cart && cart.length> 0) { %>
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm sticky-top" style="top: 100px;">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-heart me-2"></i>Family Love Summary
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="order-summary">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Items (<%= cart.length %>):</span>
-                                        <span>₹<%= subtotal.toFixed(2) %></span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Shipping:</span>
-                                        <span class="text-success">FREE</span>
-                                    </div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between mb-3">
-                                        <strong>Total:</strong>
-                                        <strong class="text-primary fs-4">₹<%= subtotal.toFixed(2) %></strong>
-                                    </div>
-
-                                    <div class="payment-info bg-light p-3 rounded mb-3">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-money-bill-wave text-success fs-4 me-2"></i>
-                                            <strong>Pay Only When Your Family is Happy</strong>
-                                        </div>
-                                        <small class="text-muted">
-                                            No advance payment required. Pay when you see your family's happiness.
-                                        </small>
-                                    </div>
-
-                                    <a href="/checkout" class="btn btn-success btn-lg w-100 mb-3">
-                                        <i class="fas fa-heart me-2"></i>Get These for My Family
-                                    </a>
-
-                                    <a href="/products" class="btn btn-outline-primary w-100">
-                                        <i class="fas fa-arrow-left me-2"></i>Add More Love
-                                    </a>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <!-- Trust Badges -->
-                        <div class="trust-section mt-4">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <h6 class="fw-bold mb-3">Why Families Trust PAWS?</h6>
-                                    <div class="trust-items">
-                                        <div class="trust-item mb-2">
-                                            <i class="fas fa-shield-alt text-success me-2"></i>
-                                            <small>100% safe for your family</small>
-                                        </div>
-                                        <div class="trust-item mb-2">
-                                            <i class="fas fa-phone text-primary me-2"></i>
-                                            <small>We call before delivery</small>
-                                        </div>
-                                        <div class="trust-item mb-2">
-                                            <i class="fas fa-heart text-danger me-2"></i>
-                                            <small>30-day love guarantee</small>
-                                        </div>
-                                        <div class="trust-item">
-                                            <i class="fas fa-users text-info me-2"></i>
-                                            <small>75,000+ happy families</small>
-                                        </div>
+                    <!-- Trust Badges -->
+                    <div class="trust-section mt-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6 class="fw-bold mb-3">Why Families Trust PAWS?</h6>
+                                <div class="trust-items">
+                                    <div class="trust-item mb-2">
+                                        <i class="fas fa-shield-alt text-success me-2"></i>
+                                        <small>100% safe for your family</small>
+                                    </div>
+                                    <div class="trust-item mb-2">
+                                        <i class="fas fa-phone text-primary me-2"></i>
+                                        <small>We call before delivery</small>
+                                    </div>
+                                    <div class="trust-item mb-2">
+                                        <i class="fas fa-heart text-danger me-2"></i>
+                                        <small>30-day love guarantee</small>
+                                    </div>
+                                    <div class="trust-item">
+                                        <i class="fas fa-users text-info me-2"></i>
+                                        <small>75,000+ happy families</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <% } %>
-            </div>
+                </div>
+            <% } %>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Need Help Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="help-card text-center">
-                        <i class="fas fa-heart fs-2 text-primary mb-3"></i>
-                        <h5 class="fw-bold">Family Care Support</h5>
-                        <p class="text-muted">Call us for any help with your family's needs</p>
-                        <a href="tel:+91-7666702468" class="btn btn-outline-primary">
-                            <i class="fas fa-phone me-2"></i>+91-7666702468
-                        </a>
-                    </div>
+<!-- Need Help Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="help-card text-center p-4 border rounded shadow-sm h-100">
+                    <i class="fas fa-heart fs-2 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Family Care Support</h5>
+                    <p class="text-muted">Call us for any help with your family's needs</p>
+                    <a href="tel:+91-7666702468" class="btn btn-outline-primary">
+                        <i class="fas fa-phone me-2"></i>+91-7666702468
+                    </a>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="help-card text-center">
-                        <i class="fas fa-comments fs-2 text-success mb-3"></i>
-                        <h5 class="fw-bold">Care Expert Chat</h5>
-                        <p class="text-muted">Chat with our family care experts</p>
-                        <a href="mailto:gadgetsstoreaffiliate@gmail.com" class="btn btn-outline-success">
-                            <i class="fas fa-envelope me-2"></i>gadgetsstoreaffiliate@gmail.com
-                        </a>
-                    </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="help-card text-center p-4 border rounded shadow-sm h-100">
+                    <i class="fas fa-comments fs-2 text-success mb-3"></i>
+                    <h5 class="fw-bold">Care Expert Chat</h5>
+                    <p class="text-muted">Chat with our family care experts</p>
+                    <a href="mailto:gadgetsstoreaffiliate@gmail.com" class="btn btn-outline-success">
+                        <i class="fas fa-envelope me-2"></i>gadgetsstoreaffiliate@gmail.com
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+/* Mobile-friendly adjustments */
+.cart-items .card img {
+    max-height: 80px;
+    object-fit: cover;
+}
+.quantity-controls input[type="number"] {
+    min-width: 60px;
+}
+.sticky-top {
+    top: 90px !important;
+}
+@media(max-width: 992px) {
+    .sticky-top {
+        position: relative !important;
+        top: auto !important;
+    }
+}
+.trust-section .trust-item i {
+    font-size: 1.1rem;
+}
+.help-card h5 {
+    font-size: 1.1rem;
+}
+.help-card p {
+    font-size: 0.9rem;
+}
+</style>
