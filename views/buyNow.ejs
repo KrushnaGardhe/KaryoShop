@@ -1,418 +1,331 @@
 <% layout('layout') %>
 
-<section class="py-5">
-    <div class="container">
-        <!-- Progress Indicator -->
-        <div class="progress-steps mb-4">
-            <div class="d-flex justify-content-center">
-                <div class="step-indicator active">
-                    <span class="step-number">1</span>
-                    <span class="step-text">Product</span>
-                </div>
-                <div class="step-line active"></div>
-                <div class="step-indicator active">
-                    <span class="step-number">2</span>
-                    <span class="step-text">Details</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-indicator">
-                    <span class="step-number">3</span>
-                    <span class="step-text">Confirmation</span>
-                </div>
-            </div>
-        </div>
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="display-6 fw-bold mb-4">
+                        <i class="fas fa-heart me-2"></i>Get These for Your Family - Pay When Happy
+                    </h1>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center mb-4">
-                    <i class="fas fa-bolt text-warning fs-2 me-3"></i>
-                    <div>
-                        <h1 class="display-6 fw-bold mb-0">Get This for Your Family NOW</h1>
-                        <p class="text-muted mb-0">Your family's happiness is just 60 seconds away!</p>
-                    </div>
-                </div>
-
-                <!-- Error Messages -->
-                <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
-                    <div class="alert alert-danger">
-                        <h6 class="fw-bold mb-2">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Please fix the following:
-                        </h6>
-                        <ul class="mb-0">
-                            <% errors.forEach(error => { %>
-                                <li><%= error %></li>
-                            <% }) %>
-                        </ul>
-                    </div>
-                <% } %>
-
-                <!-- Buy Now Form -->
-                <form method="POST" action="/buy-now" id="buyNowForm" novalidate>
-                    <input type="hidden" name="productId" value="<%= product._id %>">
-                    
-                    <!-- Product Selection -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">
-                                <i class="fas fa-heart me-2"></i>Perfect for Your Family
-                            </h5>
+                    <!-- Error Messages -->
+                    <% if (typeof errors !=='undefined' && errors && errors.length> 0) { %>
+                        <div class="alert alert-danger">
+                            <h6 class="fw-bold mb-2">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:
+                            </h6>
+                            <ul class="mb-0">
+                                <% errors.forEach(error=> { %>
+                                    <li>
+                                        <%= error %>
+                                    </li>
+                                    <% }) %>
+                            </ul>
                         </div>
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <img src="<%= product.images[0] %>" class="img-fluid rounded" alt="<%= product.name %>">
-                                </div>
-                                <div class="col-md-6">
-                                    <h5 class="fw-bold"><%= product.name %></h5>
-                                    <p class="text-muted mb-2"><%= product.description.substring(0, 100) %>...</p>
-                                    <div class="stars mb-2">
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <small class="text-muted ms-2">4.9 (3,247 happy families)</small>
+                        <% } %>
+
+                            <!-- Checkout Form -->
+                            <form method="POST" action="/buy-now/<%= product ? product._id : '' %>" id="checkoutForm" novalidate>
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-home me-2"></i>Family Delivery Information
+                                        </h5>
                                     </div>
-                                </div>
-                                <div class="col-md-3 text-end">
-                                    <h3 class="text-primary fw-bold">₹<%= product.price %></h3>
-                                    <small class="text-success">
-                                        <i class="fas fa-truck me-1"></i>FREE Delivery
-                                    </small>
-                                </div>
-                            </div>
-                            
-                            <hr>
-                            
-                            <div class="row">
-                                <!-- Size Selection -->
-                                <% if (product.sizes && product.sizes.length > 0) { %>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold">Size *</label>
-                                        <div class="size-options">
-                                            <% product.sizes.forEach(size => { %>
-                                                <input type="radio" class="btn-check" name="size" id="buynow_size_<%= size %>" value="<%= size %>" required>
-                                                <label class="btn btn-outline-primary me-2 mb-2" for="buynow_size_<%= size %>"><%= size %></label>
-                                            <% }) %>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="name" class="form-label fw-bold">Full Name *</label>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    value="<%= typeof formData !== 'undefined' ? formData.name || '' : '' %>"
+                                                    required minlength="2">
+                                                <div class="invalid-feedback">
+                                                    Please provide a valid full name (minimum 2 characters).
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="mobile" class="form-label fw-bold">Mobile Number *</label>
+                                                <input type="text" class="form-control" id="mobile" name="mobile"
+                                                    value="<%= typeof formData !== 'undefined' ? formData.mobile || '' : '' %>"
+                                                    required minlength="10" maxlength="10" pattern="[0-9]{10}"
+                                                    inputmode="numeric"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)"
+                                                    placeholder="10-digit mobile number">
+                                                <div class="invalid-feedback">
+                                                    Please provide a valid 10-digit mobile number.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label fw-bold">Email Address
+                                                (Optional)</label>
+                                            <input type="email" class="form-control" id="email" name="email"
+                                                value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
+                                                placeholder="your.email@example.com">
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle text-info me-1"></i>
+                                                Email is optional. If provided, it must be valid.
+                                            </div>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid email address.
+                                            </div>
+                                        </div>
+
+                                        <!-- Structured Address Fields -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Family Home Address *</label>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="houseNo" class="form-label">House/Flat No. *</label>
+                                                    <input type="text" class="form-control" id="houseNo" name="houseNo"
+                                                        value="<%= typeof formData !== 'undefined' ? formData.houseNo || '' : '' %>"
+                                                        required minlength="1" placeholder="e.g. Flat 12B, House 45">
+                                                    <div class="invalid-feedback">Please provide your house/flat number.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="street" class="form-label">Street / Area *</label>
+                                                    <input type="text" class="form-control" id="street" name="street"
+                                                        value="<%= typeof formData !== 'undefined' ? formData.street || '' : '' %>"
+                                                        required minlength="3" placeholder="e.g. MG Road, Green Park">
+                                                    <div class="invalid-feedback">Please provide your street/area.</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="city" class="form-label">City *</label>
+                                                    <input type="text" class="form-control" id="city" name="city"
+                                                        value="<%= typeof formData !== 'undefined' ? formData.city || '' : '' %>"
+                                                        required minlength="2">
+                                                    <div class="invalid-feedback">Please provide your city.</div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="state" class="form-label">State *</label>
+                                                    <input type="text" class="form-control" id="state" name="state"
+                                                        value="<%= typeof formData !== 'undefined' ? formData.state || '' : '' %>"
+                                                        required minlength="2">
+                                                    <div class="invalid-feedback">Please provide your state.</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="pincode" class="form-label">PIN Code *</label>
+                                                    <input type="text" class="form-control" id="pincode" name="pincode"
+                                                        value="<%= typeof formData !== 'undefined' ? formData.pincode || '' : '' %>"
+                                                        required minlength="6" maxlength="6" pattern="[0-9]{6}"
+                                                        inputmode="numeric"
+                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
+                                                        placeholder="6-digit PIN Code">
+                                                    <div class="invalid-feedback">Please provide a valid 6-digit PIN
+                                                        Code.</div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Optional Landmark -->
+                                            <div class="mb-3">
+                                                <label for="landmark" class="form-label">Landmark (Optional)</label>
+                                                <input type="text" class="form-control" id="landmark" name="landmark"
+                                                    value="<%= typeof formData !== 'undefined' ? formData.landmark || '' : '' %>"
+                                                    placeholder="e.g. Near City Mall or Opposite SBI Bank">
+                                            </div>
                                         </div>
                                     </div>
-                                <% } %>
+                                </div>
 
-                                <!-- Color Selection -->
-                                <% if (product.colors && product.colors.length > 0) { %>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold">Color *</label>
-                                        <div class="color-options">
-                                            <% product.colors.forEach(color => { %>
-                                                <input type="radio" class="btn-check" name="color" id="buynow_color_<%= color %>" value="<%= color %>" required>
-                                                <label class="btn btn-outline-secondary me-2 mb-2" for="buynow_color_<%= color %>"><%= color %></label>
-                                            <% }) %>
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-heart me-2"></i>Family-Safe Payment
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="payment-option bg-light p-4 rounded">
+                                            <div class="d-flex align-items-center">
+                                                <input type="radio" class="form-check-input me-3" id="cod"
+                                                    name="payment" value="COD" checked>
+                                                <div>
+                                                    <label for="cod" class="form-check-label fw-bold fs-5">
+                                                        <i class="fas fa-money-bill-wave text-success me-2"></i>Pay When
+                                                        Your Family is Happy
+                                                    </label>
+                                                    <p class="text-muted mb-0 mt-2">
+                                                        Pay in cash only when you see your family's happiness. No
+                                                        advance payment, no risk!
+                                                        Our care expert will call you before arriving.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cod-info mt-3 p-3 bg-info bg-opacity-10 rounded">
+                                            <h6 class="text-info mb-2">
+                                                <i class="fas fa-heart me-2"></i>How Family-Safe Payment Works:
+                                            </h6>
+                                            <ol class="mb-0 text-muted">
+                                                <li>We call to confirm your family's needs and address</li>
+                                                <li>Your products are carefully prepared and dispatched within 2-3 days
+                                                </li>
+                                                <li>Our care expert calls before arriving at your home</li>
+                                                <li>See your family's happiness, then pay in cash</li>
+                                            </ol>
                                         </div>
                                     </div>
-                                <% } %>
-                            </div>
-
-                            <!-- Quantity -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Quantity</label>
-                                    <div class="quantity-input d-flex align-items-center">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="changeBuyNowQuantity(-1)">-</button>
-                                        <input type="number" name="quantity" id="buyNowQuantity" class="form-control mx-2" value="1" min="1" max="<%= product.stock %>" style="width: 80px;">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="changeBuyNowQuantity(1)">+</button>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Customer Information -->
-                    <div class="card shadow-sm mb-4">
+                                <div class="checkout-actions">
+                                    <button type="submit" class="btn btn-success btn-lg me-3">
+                                        <i class="fas fa-heart me-2"></i>Get These for My Family
+                                    </button>
+                                    <a href="/cart" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Family Cart
+                                    </a>
+                                </div>
+                            </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm sticky-top" style="top: 100px;">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">
-                                <i class="fas fa-home me-2"></i>Family Delivery Information
+                                <i class="fas fa-heart me-2"></i>Family Love Summary
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="buyNowName" class="form-label fw-bold">Full Name *</label>
-                                    <input type="text" class="form-control" id="buyNowName" name="name" 
-                                           value="<%= typeof formData !== 'undefined' ? formData.name || '' : '' %>" 
-                                           required minlength="2" placeholder="Enter your full name">
-                                    <div class="invalid-feedback">
-                                        Please provide your full name (minimum 2 characters).
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="buyNowMobile" class="form-label fw-bold">Mobile Number *</label>
-                                    <input type="tel" class="form-control" id="buyNowMobile" name="mobile" 
-                                           value="<%= typeof formData !== 'undefined' ? formData.mobile || '' : '' %>" 
-                                           required pattern="[0-9]{10}" placeholder="10-digit mobile number">
-                                    <div class="invalid-feedback">
-                                        Please provide a valid 10-digit mobile number.
-                                    </div>
-                                </div>
+                            <div class="order-items mb-3">
+                                <% if (cart && cart.length> 0) { %>
+                                    <% cart.forEach(item=> { %>
+                                        <div class="order-item d-flex align-items-center mb-3 pb-2 border-bottom">
+                                            <img src="<%= item.image %>" class="rounded me-3"
+                                                style="width: 50px; height: 50px; object-fit: cover;"
+                                                alt="<%= item.name %>">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">
+                                                    <%= item.name %>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <% if (item.size) { %>Size: <%= item.size %> | <% } %>
+                                                                <% if (item.color) { %>Color: <%= item.color %> | <% }
+                                                                            %>
+                                                                            Qty: <%= item.quantity %>
+                                                </small>
+                                                <div class="text-primary fw-bold">₹<%= (item.price *
+                                                        item.quantity).toFixed(2) %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <p class="text-muted">Your cart is empty.</p>
+                                                <% } %>
                             </div>
-                            <div class="mb-3">
-                                <label for="buyNowEmail" class="form-label fw-bold">Gmail Email Address *</label>
-                                <input type="email" class="form-control" id="buyNowEmail" name="email" 
-                                       value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>" 
-                                       required placeholder="your.email@gmail.com">
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle text-info me-1"></i>
-                                    Only Gmail addresses accepted for family order updates
-                                </div>
-                                <div class="invalid-feedback">
-                                    Please provide a valid Gmail address (must end with @gmail.com).
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="buyNowAddress" class="form-label fw-bold">Family Home Address *</label>
-                                <textarea class="form-control" id="buyNowAddress" name="address" rows="3" 
-                                          required minlength="10" placeholder="Where should we deliver happiness? House/Flat No., Street, Area, City, State, PIN Code"><%= typeof formData !== 'undefined' ? formData.address || '' : '' %></textarea>
-                                <div class="invalid-feedback">
-                                    Please provide your complete family address (minimum 10 characters).
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Payment Method -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0">
-                                <i class="fas fa-heart me-2"></i>Family-Safe Payment
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="payment-option bg-light p-4 rounded">
-                                <div class="d-flex align-items-center">
-                                    <input type="radio" class="form-check-input me-3" id="buyNowCOD" name="payment" value="COD" checked>
-                                    <div>
-                                        <label for="buyNowCOD" class="form-check-label fw-bold fs-5">
-                                            <i class="fas fa-money-bill-wave text-success me-2"></i>Pay When Your Family is Happy
-                                        </label>
-                                        <p class="text-muted mb-0 mt-2">
-                                            <strong>100% SAFE:</strong> Pay in cash only when you see your family's happiness. No advance payment, no risk!
-                                        </p>
-                                    </div>
+                            <div class="order-totals">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span>₹<%= subtotal ? subtotal.toFixed(2) : '0.00' %></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span class="text-success">FREE</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>COD Charges:</span>
+                                    <span class="text-success">FREE</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Total Amount:</strong>
+                                    <strong class="text-primary fs-4">₹<%= subtotal ? subtotal.toFixed(2) : '0.00' %>
+                                            </strong>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Submit Button -->
-                    <div class="checkout-actions text-center">
-                        <button type="submit" class="btn btn-warning btn-lg px-5 py-3 fw-bold pulse-animation">
-                            <i class="fas fa-heart me-2"></i>GET THIS FOR MY FAMILY NOW
-                        </button>
-                        <p class="text-muted mt-2 small">
-                            <i class="fas fa-shield-check text-success me-1"></i>
-                            100% Safe for Family • No advance payment • Love guaranteed
-                        </p>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Order Summary Sidebar -->
-            <div class="col-lg-4">
-                <div class="card shadow-sm sticky-top" style="top: 100px;">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-heart me-2"></i>Family Love Summary
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="order-item mb-3">
-                            <div class="d-flex align-items-center">
-                                <img src="<%= product.images[0] %>" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;" alt="<%= product.name %>">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1"><%= product.name %></h6>
-                                    <small class="text-muted">Qty: <span id="summaryQuantity">1</span></small>
-                                </div>
-                                <div class="text-primary fw-bold">₹<span id="summaryPrice"><%= product.price %></span></div>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="order-totals">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <span>₹<span id="summarySubtotal"><%= product.price %></span></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Shipping:</span>
-                                <span class="text-success">FREE</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>COD Charges:</span>
-                                <span class="text-success">FREE</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-3">
-                                <strong>Total Amount:</strong>
-                                <strong class="text-primary fs-4">₹<span id="summaryTotal"><%= product.price %></span></strong>
-                            </div>
-                        </div>
-
-                        <!-- Trust Indicators -->
-                        <div class="trust-indicators">
-                            <div class="bg-light p-3 rounded">
+                            <div class="delivery-info bg-light p-3 rounded">
                                 <h6 class="fw-bold text-success mb-2">
-                                    <i class="fas fa-shield-check me-2"></i>Your Family's Protection
+                                    <i class="fas fa-home me-2"></i>Family Delivery Promise
                                 </h6>
-                                <ul class="list-unstyled mb-0 small">
-                                    <li class="mb-1">
-                                        <i class="fas fa-check text-success me-2"></i>100% Happiness Guarantee
-                                    </li>
-                                    <li class="mb-1">
-                                        <i class="fas fa-check text-success me-2"></i>Free Replacement
-                                    </li>
-                                    <li class="mb-1">
-                                        <i class="fas fa-check text-success me-2"></i>Quality Assurance
-                                    </li>
-                                    <li class="mb-0">
-                                        <i class="fas fa-check text-success me-2"></i>Personal Call Service
-                                    </li>
+                                <ul class="mb-0 text-muted small">
+                                    <li>Free delivery to your family home</li>
+                                    <li>Careful delivery within 3-5 days</li>
+                                    <li>Care expert calls before arrival</li>
+                                    <li>Pay only when family is happy</li>
                                 </ul>
                             </div>
                         </div>
-
-                        <!-- Social Proof -->
-                        <div class="social-proof mt-3">
-                            <div class="text-center">
-                                <div class="customer-faces mb-2">
-                                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=30&h=30&fit=crop" class="rounded-circle customer-face-small" alt="Customer">
-                                    <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=30&h=30&fit=crop" class="rounded-circle customer-face-small" alt="Customer">
-                                    <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=30&h=30&fit=crop" class="rounded-circle customer-face-small" alt="Customer">
-                                </div>
-                                <small class="text-muted">
-                                    <strong>75,000+ families</strong> trust us with their most precious
-                                </small>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<script>
-// Update quantity and pricing
-function changeBuyNowQuantity(change) {
-    const quantityInput = document.getElementById('buyNowQuantity');
-    const currentValue = parseInt(quantityInput.value) || 1;
-    const maxValue = parseInt(quantityInput.max) || 100;
-    const minValue = parseInt(quantityInput.min) || 1;
-    
-    const newValue = currentValue + change;
-    
-    if (newValue >= minValue && newValue <= maxValue) {
-        quantityInput.value = newValue;
-        updateSummary();
-    }
-}
+    <script>
+        // Client-side form validation
+        document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+            const form = this;
+            const name = document.getElementById('name');
+            const mobile = document.getElementById('mobile');
+            const email = document.getElementById('email');
+            const houseNo = document.getElementById('houseNo');
+            const street = document.getElementById('street');
+            const city = document.getElementById('city');
+            const state = document.getElementById('state');
+            const pincode = document.getElementById('pincode');
 
-// Update order summary
-function updateSummary() {
-    const quantity = parseInt(document.getElementById('buyNowQuantity').value) || 1;
-    const basePrice = <%= product.price %>;
-    const total = basePrice * quantity;
-    
-    document.getElementById('summaryQuantity').textContent = quantity;
-    document.getElementById('summaryPrice').textContent = total.toFixed(0);
-    document.getElementById('summarySubtotal').textContent = total.toFixed(0);
-    document.getElementById('summaryTotal').textContent = total.toFixed(0);
-}
+            let isValid = true;
 
-// Listen for quantity changes
-document.getElementById('buyNowQuantity').addEventListener('input', updateSummary);
+            // Reset previous validation states
+            form.classList.remove('was-validated');
+            [name, mobile, email, houseNo, street, city, state, pincode].forEach(field => {
+                field.classList.remove('is-invalid');
+            });
 
-// Form validation
-// Form validation
-document.getElementById('buyNowForm').addEventListener('submit', function(e) {
-    const form = this;
-    const name = document.getElementById('buyNowName');
-    const mobile = document.getElementById('buyNowMobile');
-    const email = document.getElementById('buyNowEmail');
-    const address = document.getElementById('buyNowAddress');
+            // Name validation
+            if (!name.value.trim() || name.value.trim().length < 2) {
+                name.classList.add('is-invalid');
+                isValid = false;
+            }
 
-    let isValid = true;
+            // Mobile validation (10 digits only)
+            const mobilePattern = /^[0-9]{10}$/;
+            if (!mobile.value.trim() || !mobilePattern.test(mobile.value)) {
+                mobile.classList.add('is-invalid');
+                isValid = false;
+            }
 
-    // Reset validation states
-    [name, mobile, email, address].forEach(field => {
-        field.classList.remove('is-invalid');
-    });
+            // Email validation (optional, but must be valid if provided)
+            if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                email.classList.add('is-invalid');
+                isValid = false;
+            }
 
-    // Name validation
-    if (!name.value.trim() || name.value.trim().length < 2) {
-        name.classList.add('is-invalid');
-        isValid = false;
-    }
+            // Address fields validation
+            if (!houseNo.value.trim()) { houseNo.classList.add('is-invalid'); isValid = false; }
+            if (!street.value.trim()) { street.classList.add('is-invalid'); isValid = false; }
+            if (!city.value.trim()) { city.classList.add('is-invalid'); isValid = false; }
+            if (!state.value.trim()) { state.classList.add('is-invalid'); isValid = false; }
 
-    // Mobile validation
-    const mobilePattern = /^[0-9]{10}$/;
-    if (!mobile.value.trim() || !mobilePattern.test(mobile.value.replace(/\s+/g, ''))) {
-        mobile.classList.add('is-invalid');
-        isValid = false;
-    }
+            const pinPattern = /^[0-9]{6}$/;
+            if (!pincode.value.trim() || !pinPattern.test(pincode.value)) {
+                pincode.classList.add('is-invalid');
+                isValid = false;
+            }
 
-    // Email validation
-    if (!email.value.trim() || !email.value.toLowerCase().endsWith('@gmail.com')) {
-        email.classList.add('is-invalid');
-        isValid = false;
-    }
+            if (!isValid) {
+                e.preventDefault();
+                e.stopPropagation();
 
-    // Address validation
-    if (!address.value.trim() || address.value.trim().length < 10) {
-        address.classList.add('is-invalid');
-        isValid = false;
-    }
+                // Scroll to first invalid field
+                const firstInvalidField = form.querySelector('.is-invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalidField.focus();
+                }
 
-    // ✅ Size validation (only if size options exist)
-    const sizeOptions = form.querySelectorAll('input[name="size"]');
-    if (sizeOptions.length > 0) {
-        const sizeSelected = [...sizeOptions].some(opt => opt.checked);
-        if (!sizeSelected) {
-            isValid = false;
-            alert("Please select a size before continuing.");
-        }
-    }
+                alert('Please fill all required fields correctly before placing your order.');
+            }
 
-    // ✅ Color validation (only if color options exist)
-    const colorOptions = form.querySelectorAll('input[name="color"]');
-    if (colorOptions.length > 0) {
-        const colorSelected = [...colorOptions].some(opt => opt.checked);
-        if (!colorSelected) {
-            isValid = false;
-            alert("Please select a color before continuing.");
-        }
-    }
-
-    if (!isValid) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Scroll to first invalid field
-        const firstInvalidField = form.querySelector('.is-invalid') || form.querySelector('input[name="size"], input[name="color"]');
-        if (firstInvalidField) {
-            firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstInvalidField.focus();
-        }
-    }
-});
-
-
-// Real-time email validation
-document.getElementById('buyNowEmail').addEventListener('input', function() {
-    const email = this.value.trim();
-    if (email && !email.toLowerCase().endsWith('@gmail.com')) {
-        this.setCustomValidity('Only Gmail addresses are accepted.');
-    } else {
-        this.setCustomValidity('');
-    }
-});
-</script>
+            form.classList.add('was-validated');
+        });
+    </script>

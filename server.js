@@ -175,65 +175,80 @@ app.get('/products/:id/buy-now', async (req, res) => {
 });
 
 // Process Buy Now
-app.post('/buy-now', async (req, res) => {
+app.post('/buy-now/:id', async (req, res) => {
   try {
-    const { productId, name, mobile, email, address, size, color, quantity = 1 } = req.body;
-    
-    // Server-side validation
-    const errors = [];
-    
-    if (!name || name.trim().length < 2) {
-      errors.push('Full name is required (minimum 2 characters)');
-    }
-    
-    if (!mobile || !/^\d{10}$/.test(mobile.replace(/\s+/g, ''))) {
-      errors.push('Valid 10-digit mobile number is required');
-    }
-    
-    if (!email || !email.toLowerCase().endsWith('@gmail.com')) {
-      errors.push('Gmail address is required (must end with @gmail.com)');
-    }
-    
-    if (!address || address.trim().length < 10) {
-      errors.push('Complete shipping address is required (minimum 10 characters)');
-    }
-    
-    if (!productId) {
-      errors.push('Product selection is required');
+    const {
+      productId,
+      name,
+      mobile,
+      email,
+      houseNo,
+      street,
+      city,
+      state,
+      pincode,
+      landmark,
+      size = '',
+      color = '',
+      quantity = 1
+    } = req.body;
+    let ids=req.params.id;
+    // Fetch product first
+    let product = null;
+    if (ids) {
+      product = await Product.findById(ids);
     }
 
-    if (errors.length > 0) {
-      const product = await Product.findById(productId);
-      const tempCart = [{
-        productId: product._id.toString(),
-        name: product.name,
-        price: product.price,
-        image: product.images[0],
-        size: size || '',
-        color: color || '',
-        quantity: parseInt(quantity)
-      }];
-      
+    // Server-side validation
+    const errors = [];
+
+    if (!productId || !product) errors.push('Product selection is required.');
+    if (!name || name.trim().length < 2) errors.push('Full name is required (minimum 2 characters).');
+    if (!mobile || !/^\d{10}$/.test(mobile.replace(/\s+/g, ''))) errors.push('Valid 10-digit mobile number is required.');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.push('Please provide a valid email address.');
+    if (!houseNo || houseNo.trim().length < 1) errors.push('House/Flat number is required.');
+    if (!street || street.trim().length < 3) errors.push('Street/Area is required.');
+    if (!city || city.trim().length < 2) errors.push('City is required.');
+    if (!state || state.trim().length < 2) errors.push('State is required.');
+    if (!pincode || !/^\d{6}$/.test(pincode.trim())) errors.push('Valid 6-digit PIN code is required.');
+
+    const qty = parseInt(quantity);
+    if (isNaN(qty) || qty <= 0) errors.push('Quantity must be a positive number.');
+
+    // If validation fails, render page with product info and temp cart
+    if (errors.length < 0) {
+      const tempCart = product
+        ? [{
+            productId: product._id.toString(),
+            name: product.name,
+            price: product.price,
+            image: product.images[0] || '',
+            size,
+            color,
+            quantity: qty
+          }]
+        : [];
+
       return res.render('buyNow', {
-        title: `Buy ${product.name} - Fast Checkout`,
+        title: product ? `Buy ${product.name} - Fast Checkout` : 'Buy Now',
         product,
         cart: tempCart,
-        subtotal: product.price * parseInt(quantity),
+        subtotal: product ? product.price * qty : 0,
         isBuyNow: true,
         errors,
-        formData: { name, mobile, email, address, size, color, quantity }
+        formData: {
+          name, mobile, email, houseNo, street, city, state, pincode, landmark, size, color, quantity
+        }
       });
     }
 
-    // Get product details
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).render('404', { title: 'Product Not Found' });
-    }
+    // Construct address string
+    let address = `${houseNo.trim()}, ${street.trim()}, ${city.trim()}, ${state.trim()} - ${pincode.trim()}`;
+    if (landmark && landmark.trim().length > 0) address += ` (Landmark: ${landmark.trim()})`;
 
     // Create order
     const orderId = generateOrderId();
-    const totalAmount = product.price * parseInt(quantity);
+    const totalAmount = product.price * qty;
 
     const order = new Order({
       orderId,
@@ -241,16 +256,16 @@ app.post('/buy-now', async (req, res) => {
         productId: product._id,
         name: product.name,
         price: product.price,
-        quantity: parseInt(quantity),
-        size: size || '',
-        color: color || '',
-        image: product.images[0]
+        quantity: qty,
+        size,
+        color,
+        image: product.images[0] || ''
       }],
       totalAmount,
       customer: {
         name: name.trim(),
         mobile: mobile.trim(),
-        email: email.toLowerCase().trim(),
+        email: email ? email.trim().toLowerCase() : '',
         address: address.trim()
       },
       paymentMethod: 'COD',
@@ -258,8 +273,8 @@ app.post('/buy-now', async (req, res) => {
     });
 
     await order.save();
+
     res.redirect(`/order/${orderId}`);
-    
   } catch (error) {
     console.error('Error processing buy now:', error);
     res.render('buyNow', {
@@ -273,6 +288,8 @@ app.post('/buy-now', async (req, res) => {
     });
   }
 });
+
+
 
 // Add to cart
 app.post('/cart/add', async (req, res) => {
@@ -368,9 +385,10 @@ app.get('/checkout', (req, res) => {
 });
 
 // Process checkout
+// Process checkout
 app.post('/checkout', async (req, res) => {
   try {
-    const { name, mobile, email, address } = req.body;
+    const { name, mobile, email, houseNo, street, city, state, pincode, landmark } = req.body;
     const cart = req.session.cart || [];
 
     // Server-side validation
@@ -384,17 +402,19 @@ app.post('/checkout', async (req, res) => {
       errors.push('Valid 10-digit mobile number is required');
     }
     
-    if (!email || !email.toLowerCase().endsWith('@gmail.com')) {
-      errors.push('Gmail address is required (must end with @gmail.com)');
+    // Email is optional, but must be valid if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      errors.push('Please provide a valid email address');
     }
+
+    // Structured address validation
+    if (!houseNo || houseNo.trim().length < 1) errors.push('House/Flat No. is required');
+    if (!street || street.trim().length < 3) errors.push('Street/Area is required');
+    if (!city || city.trim().length < 2) errors.push('City is required');
+    if (!state || state.trim().length < 2) errors.push('State is required');
+    if (!pincode || !/^\d{6}$/.test(pincode.trim())) errors.push('Valid 6-digit PIN Code is required');
+
     
-    if (!address || address.trim().length < 10) {
-      errors.push('Complete shipping address is required (minimum 10 characters)');
-    }
-    
-    if (cart.length === 0) {
-      errors.push('Cart cannot be empty');
-    }
 
     if (errors.length > 0) {
       const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -403,10 +423,13 @@ app.post('/checkout', async (req, res) => {
         cart,
         subtotal,
         errors,
-        formData: { name, mobile, email, address }
+        formData: { name, mobile, email, houseNo, street, city, state, pincode, landmark }
       });
     }
-
+    let address = `${houseNo.trim()}, ${street.trim()}, ${city.trim()}, ${state.trim()} - ${pincode.trim()}`;
+    if (landmark && landmark.trim().length > 0) {
+      address += ` (Landmark: ${landmark.trim()})`;
+    }
     // Create order
     const orderId = generateOrderId();
     const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -426,7 +449,7 @@ app.post('/checkout', async (req, res) => {
       customer: {
         name: name.trim(),
         mobile: mobile.trim(),
-        email: email.toLowerCase().trim(),
+        email: email ? email.toLowerCase().trim() : null, // optional
         address: address.trim()
       },
       paymentMethod: 'COD',
@@ -451,6 +474,7 @@ app.post('/checkout', async (req, res) => {
   }
 });
 
+
 // Order success page
 app.get('/order/:orderId', async (req, res) => {
   try {
@@ -467,6 +491,48 @@ app.get('/order/:orderId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching order:', error);
     res.status(404).render('404', { title: 'Order Not Found' });
+  }
+});
+//orders
+app.get('/orders', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    res.render('orders', {
+      title: 'Family Orders - PAWS Pet & Baby Store',
+      orders,
+      currentPage: page,
+      totalPages,
+      getStatusColor: (status) => {
+        switch(status) {
+          case 'placed': return 'primary';
+          case 'processing': return 'warning';
+          case 'shipped': return 'info';
+          case 'delivered': return 'success';
+          case 'cancelled': return 'danger';
+          default: return 'secondary';
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.render('orders', {
+      title: 'Family Orders - PAWS Pet & Baby Store',
+      orders: [],
+      currentPage: 1,
+      totalPages: 1,
+      getStatusColor: () => 'secondary'
+    });
   }
 });
 
